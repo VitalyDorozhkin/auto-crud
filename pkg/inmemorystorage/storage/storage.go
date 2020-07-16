@@ -30,14 +30,17 @@ func (s *storage) CreateAuto(ctx context.Context, auto models.CreateAutoRequest)
 	if _, ok := s.items[id]; ok {
 		return 0, fmt.Errorf("generate id error")
 	}
-	s.items[id] = models.Auto{
-		ID:      id,
-		Brand:   auto.Brand,
-		Model:   auto.Model,
-		Price:   auto.Price,
-		Status:  auto.Status,
-		Mileage: auto.Mileage,
+	validatedAuto, err := s.copyWithValidate(models.Auto{ID: id}, models.UpdateAutoRequest{
+		Brand:   &auto.Brand,
+		Model:   &auto.Model,
+		Price:   &auto.Price,
+		Status:  &auto.Status,
+		Mileage: &auto.Mileage,
+	})
+	if err != nil {
+		return 0, err
 	}
+	s.items[id] = validatedAuto
 	return id, nil
 }
 
