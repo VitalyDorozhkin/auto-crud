@@ -1,7 +1,7 @@
 package models
 
 type Auto struct {
-	ID      int32  `json:"id"`
+	ID      uint32 `json:"id"`
 	Brand   string `json:"brand"`
 	Model   string `json:"model"`
 	Price   uint32 `json:"price"`
@@ -17,12 +17,21 @@ type AutoRequest struct {
 	Mileage int32  `json:"mileage"`
 }
 
+type IDResponse struct {
+	Data  *IDStruct `json:"data,omitempty"`
+	Error string    `json:"error,omitempty"`
+}
+
 type StatusResponse struct {
-	Data  *bool   `json:"data,omitempty"`
-	Error *string `json:"error,omitempty"`
+	Data  *bool  `json:"data,omitempty"`
+	Error string `json:"error,omitempty"`
 }
 
 type AutoResponse struct {
-	Data  *Auto   `json:"data,omitempty"`
-	Error *string `json:"error,omitempty"`
+	Data  *Auto  `json:"data,omitempty"`
+	Error string `json:"error,omitempty"`
+}
+
+type IDStruct struct {
+	ID uint32 `json:"id"`
 }
