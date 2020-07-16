@@ -9,12 +9,20 @@ type Auto struct {
 	Mileage int32  `json:"mileage"`
 }
 
-type AutoRequest struct {
+type CreateAutoRequest struct {
 	Brand   string `json:"brand"`
 	Model   string `json:"model"`
 	Price   uint32 `json:"price"`
 	Status  string `json:"status"`
 	Mileage int32  `json:"mileage"`
+}
+
+type UpdateAutoRequest struct {
+	Brand   *string `json:"brand"`
+	Model   *string `json:"model"`
+	Price   *uint32 `json:"price"`
+	Status  *string `json:"status"`
+	Mileage *int32  `json:"mileage"`
 }
 
 type IDResponse struct {

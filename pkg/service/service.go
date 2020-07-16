@@ -8,15 +8,15 @@ import (
 
 type storage interface {
 	GetAuto(ctx context.Context, id uint32) (auto models.Auto, err error)
-	CreateAuto(ctx context.Context, auto models.AutoRequest) (id uint32, err error)
-	UpdateAuto(ctx context.Context, auto models.Auto) (err error)
+	CreateAuto(ctx context.Context, auto models.CreateAutoRequest) (id uint32, err error)
+	UpdateAuto(ctx context.Context, id uint32, auto models.UpdateAutoRequest) (err error)
 	DeleteAuto(ctx context.Context, id uint32) (err error)
 }
 
 type Service interface {
 	GetAuto(ctx context.Context, id uint32) (response models.AutoResponse, err error)
-	CreateAuto(ctx context.Context, request *models.AutoRequest) (response models.IDResponse, err error)
-	UpdateAuto(ctx context.Context, id uint32, request *models.AutoRequest) (response models.StatusResponse, err error)
+	CreateAuto(ctx context.Context, request *models.CreateAutoRequest) (response models.IDResponse, err error)
+	UpdateAuto(ctx context.Context, id uint32, request *models.UpdateAutoRequest) (response models.StatusResponse, err error)
 	DeleteAuto(ctx context.Context, id uint32) (response models.StatusResponse, err error)
 }
 
@@ -34,7 +34,7 @@ func (s *service) GetAuto(ctx context.Context, id uint32) (response models.AutoR
 	return
 }
 
-func (s *service) CreateAuto(ctx context.Context, request *models.AutoRequest) (response models.IDResponse, err error) {
+func (s *service) CreateAuto(ctx context.Context, request *models.CreateAutoRequest) (response models.IDResponse, err error) {
 	id, err := s.storage.CreateAuto(ctx, *request)
 	if err != nil {
 		response.Error = err.Error()
@@ -44,16 +44,8 @@ func (s *service) CreateAuto(ctx context.Context, request *models.AutoRequest) (
 	return
 }
 
-func (s *service) UpdateAuto(ctx context.Context, id uint32, request *models.AutoRequest) (response models.StatusResponse, err error) {
-	auto := models.Auto{
-		ID:      id,
-		Brand:   request.Brand,
-		Model:   request.Model,
-		Price:   request.Price,
-		Status:  request.Status,
-		Mileage: request.Mileage,
-	}
-	err = s.storage.UpdateAuto(ctx, auto)
+func (s *service) UpdateAuto(ctx context.Context, id uint32, request *models.UpdateAutoRequest) (response models.StatusResponse, err error) {
+	err = s.storage.UpdateAuto(ctx, id, *request)
 	if err != nil {
 		response.Error = err.Error()
 		return response, err
