@@ -17,7 +17,8 @@ type Storage interface {
 }
 
 type storage struct {
-	items map[uint32]models.Auto
+	items     map[uint32]models.Auto
+	validator Validator
 }
 
 func (s *storage) GetAuto(ctx context.Context, id uint32) (auto models.Auto, err error) {
@@ -56,28 +57,41 @@ func (s *storage) DeleteAuto(ctx context.Context, id uint32) (err error) {
 func (s *storage) copyWithValidate(dest models.Auto, source models.UpdateAutoRequest) (res models.Auto, err error) {
 	res = dest
 	if source.Brand != nil {
-		// add validation
+		if !s.validator.CheckBrand(*source.Brand) {
+			return dest, fmt.Errorf("invalid brand")
+		}
 		res.Brand = *source.Brand
 	}
 	if source.Model != nil {
-		// add validation
+		if !s.validator.CheckModel(*source.Model) {
+			return dest, fmt.Errorf("invalid model")
+		}
 		res.Model = *source.Model
 	}
 	if source.Status != nil {
-		// add validation
+		if !s.validator.CheckStatus(*source.Status) {
+			return dest, fmt.Errorf("invalid status")
+		}
 		res.Status = *source.Status
 	}
 	if source.Mileage != nil {
-		// add validation
+		if !s.validator.CheckMileage(uint32(*source.Mileage)) {
+			return dest, fmt.Errorf("invalid mileage")
+		}
 		res.Mileage = *source.Mileage
 	}
 	if source.Price != nil {
-		// add validation
+		if !s.validator.CheckPrice(uint32(*source.Price)) {
+			return dest, fmt.Errorf("invalid price")
+		}
 		res.Price = *source.Price
 	}
 	return
 }
 
-func NewStorage() Storage {
-	return &storage{items: make(map[uint32]models.Auto)}
+func NewStorage(validator Validator) Storage {
+	return &storage{
+		items:     make(map[uint32]models.Auto),
+		validator: validator,
+	}
 }
