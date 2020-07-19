@@ -10,6 +10,7 @@ import (
 )
 
 type Storage interface {
+	GetAllAutos(ctx context.Context) (autos []models.Auto, err error)
 	GetAuto(ctx context.Context, id uint32) (auto models.Auto, err error)
 	CreateAuto(ctx context.Context, auto models.CreateAutoRequest) (id uint32, err error)
 	UpdateAuto(ctx context.Context, id uint32, auto models.UpdateAutoRequest) (err error)
@@ -19,6 +20,14 @@ type Storage interface {
 type storage struct {
 	items     map[uint32]models.Auto
 	validator Validator
+}
+
+func (s *storage) GetAllAutos(ctx context.Context) (autos []models.Auto, err error) {
+	autos = make([]models.Auto, 0, len(s.items))
+	for _, v := range s.items {
+		autos = append(autos, v)
+	}
+	return
 }
 
 func (s *storage) GetAuto(ctx context.Context, id uint32) (auto models.Auto, err error) {

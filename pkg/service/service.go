@@ -7,6 +7,7 @@ import (
 )
 
 type storage interface {
+	GetAllAutos(ctx context.Context) (autos []models.Auto, err error)
 	GetAuto(ctx context.Context, id uint32) (auto models.Auto, err error)
 	CreateAuto(ctx context.Context, auto models.CreateAutoRequest) (id uint32, err error)
 	UpdateAuto(ctx context.Context, id uint32, auto models.UpdateAutoRequest) (err error)
@@ -14,6 +15,7 @@ type storage interface {
 }
 
 type Service interface {
+	GetAllAutos(ctx context.Context) (response models.AutosResponse, err error)
 	GetAuto(ctx context.Context, id uint32) (response models.AutoResponse, err error)
 	CreateAuto(ctx context.Context, request *models.CreateAutoRequest) (response models.IDResponse, err error)
 	UpdateAuto(ctx context.Context, id uint32, request *models.UpdateAutoRequest) (response models.StatusResponse, err error)
@@ -24,11 +26,25 @@ type service struct {
 	storage storage
 }
 
+func (s *service) GetAllAutos(ctx context.Context) (response models.AutosResponse, err error) {
+	autos, err := s.storage.GetAllAutos(ctx)
+	if err != nil {
+		response.Error = err.Error()
+		return
+	}
+
+	response.Data = make(map[uint32]models.Auto, len(autos))
+	for _, v := range autos {
+		response.Data[v.ID] = v
+	}
+	return
+}
+
 func (s *service) GetAuto(ctx context.Context, id uint32) (response models.AutoResponse, err error) {
 	auto, err := s.storage.GetAuto(ctx, id)
 	if err != nil {
 		response.Error = err.Error()
-		return response, err
+		return
 	}
 	response.Data = &auto
 	return
@@ -48,7 +64,7 @@ func (s *service) UpdateAuto(ctx context.Context, id uint32, request *models.Upd
 	err = s.storage.UpdateAuto(ctx, id, *request)
 	if err != nil {
 		response.Error = err.Error()
-		return response, err
+		return
 	}
 	res := true
 	response.Data = &res
@@ -59,7 +75,7 @@ func (s *service) DeleteAuto(ctx context.Context, id uint32) (response models.St
 	err = s.storage.DeleteAuto(ctx, id)
 	if err != nil {
 		response.Error = err.Error()
-		return response, err
+		return
 	}
 	res := true
 	response.Data = &res

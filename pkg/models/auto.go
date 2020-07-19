@@ -40,6 +40,11 @@ type AutoResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
+type AutosResponse struct {
+	Data  map[uint32]Auto `json:"data,omitempty"`
+	Error string          `json:"error,omitempty"`
+}
+
 type IDStruct struct {
 	ID uint32 `json:"id"`
 }
